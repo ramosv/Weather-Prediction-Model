@@ -22,7 +22,7 @@ Run the following commands:
 
 #### Adding jupyter notebooks to vs code
 
-(Read article here)[https://code.visualstudio.com/docs/datascience/jupyter-notebooks#:~:text=Jupyter%20Notebooks%20in%20VS%20Code,and%20through%20Python%20code%20files.]
+[Read article here](https://code.visualstudio.com/docs/datascience/jupyter-notebooks#:~:text=Jupyter%20Notebooks%20in%20VS%20Code,and%20through%20Python%20code%20files.)
 
 > Note from Eddie: I didn't need to follow the above steps. Once you get the data unzipped, the virtual env. made, and all the packages installed, you should be able to open the `test.ipynb` and VSCode will have a message box pop-up asking to install extensions for Jupyter notebooks.
 
