@@ -3,3 +3,7 @@ raw_data
 
 # Virtual environment
 .venv
+
+venv/
+
+.ipynb_checkpoints/
