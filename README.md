@@ -8,15 +8,17 @@ Weather Prediction Model for the State of Colorado
 
 #### Unzip data
 
-> unzip ./Weather\ Prediction\ Raw\ Data.zip -d ./raw_data
+> `unzip ./Weather\ Prediction\ Raw\ Data.zip -d ./raw_data`
 
 #### Virtual environment
 
 Run the following commands:
 
-> source .venv/bin/activate [^1]
-> pip install pip --upgrade
-> pip install -r ./requirements.txt
+> `source .venv/bin/activate` [^1]
+
+> `pip install pip --upgrade`
+
+> `pip install -r ./requirements.txt`
 
 #### Adding jupyter notebooks to vs code
 
