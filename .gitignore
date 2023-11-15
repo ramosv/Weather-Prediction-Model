@@ -1,0 +1,5 @@
+# Folder where I have kept the raw data
+raw_data
+
+# Virtual environment
+.venv
