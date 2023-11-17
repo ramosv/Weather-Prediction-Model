@@ -5,5 +5,9 @@ raw_data
 .venv
 
 venv/
+.venv/
+venv\
+
+.ipynb_checkpoints\
 
 .ipynb_checkpoints/

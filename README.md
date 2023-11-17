@@ -27,3 +27,9 @@ Run the following commands:
 > Note from Eddie: I didn't need to follow the above steps. Once you get the data unzipped, the virtual env. made, and all the packages installed, you should be able to open the `test.ipynb` and VSCode will have a message box pop-up asking to install extensions for Jupyter notebooks.
 
 [^1]: Note this may be different on Windows!
+
+
+### Screenshots
+#### Average Monthly Temperature by Location 2003-2013
+![image](Screenshots/Figure_1.png 'Average Monthly Temperature by Location')
+
