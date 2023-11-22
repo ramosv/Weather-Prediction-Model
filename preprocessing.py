@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-import os
+from missingData import process_missing_DenverData2013,process_missing_AlamosaData2014
 
 fileNames = ['Alamosa-2003-2012.csv','Denver-2003-2012.csv','Grand-2003-2012.csv','Springs-2003-2012.csv']
 path = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/raw_data/Weather Prediction Raw Data/"
@@ -23,7 +22,6 @@ for file in fileNames:
     allFrames.append(temp_frame)
 
 
-
 #Combine the data into a single data frame sorted by date
 combined_frames = pd.concat(allFrames, ignore_index=True)
 combined_frames.sort_values(by='DATE',inplace=True)
@@ -34,12 +32,11 @@ combined_frames.sort_values(by='DATE',inplace=True)
 
 #Adding a new month column
 combined_frames['Month'] = combined_frames['DATE'].dt.to_period('M')
-print(combined_frames)
 
 #Group my month and location and get average
 monthlyAverage = combined_frames.groupby(['Month','Location']).agg(AvgTemp =('HourlyDryBulbTemperature', 'mean')).reset_index()
 monthlyAverage['Month'] = monthlyAverage['Month'].dt.to_timestamp()
-print(monthlyAverage)
+
 
 #Pivot the dataframe. For locations as columns and months as rows
 pivot_df = monthlyAverage.pivot(index='Month',columns='Location',values='AvgTemp')
@@ -51,81 +48,68 @@ for location in pivot_df.columns:
 
 plt.xlabel('Month')
 plt.ylabel('Average Temperature')
-plt.title('Average Monthly Temperature by Location')
+plt.title('Average Monthly Temperature by Location (2003-2012)')
 plt.legend(title='Location')
 plt.grid(True)
 plt.show()
 
 
 #########  Now dealing with 2013 to 2022 ############
-## Before preprossing the last decade we will have to deal with missing data for 2013
-## I will be taking hour average from 2012 and 2014 to fill in the data of 2013
 
-fillInData = 'Denver-2012-2015.csv'
+morefiles = ['Alamosa-2013-2022.csv','Denver-2014-2022.csv','Grand-2013-2022.csv','Springs-2013-2022.csv']
+frames = []
 
-Denver_2012_2015 = pd.read_csv(path+fillInData, usecols=['DATE','HourlyDryBulbTemperature'])
-Denver_2012_2015['DATE'] = pd.to_datetime(Denver_2012_2015['DATE'])
+for file in morefiles:
+    temp_frame = pd.read_csv(path+file,usecols=['DATE','HourlyDryBulbTemperature'])
 
-#Adding location column
-Denver_2012_2015['Location'] = 'Denver'
+    temp_frame['DATE'] = pd.to_datetime(temp_frame['DATE'])
+    temp_frame['HourlyDryBulbTemperature'] = pd.to_numeric(temp_frame['HourlyDryBulbTemperature'],errors='coerce')
+    temp_frame['HourlyDryBulbTemperature'].interpolate(inplace=True)
+    temp_frame['HourlyDryBulbTemperature'].fillna(method='ffill',inplace=True)
+    temp_frame['HourlyDryBulbTemperature'].fillna(method='bfill',inplace=True)
 
-#Dropping the year 2015
-Denver_2012_2014 = Denver_2012_2015[Denver_2012_2015['DATE'].dt.year != 2015]
+    location = file.split('-')[0]
+    temp_frame['Location'] = location
 
-#Filling in data for missing values
-Denver_2012_2014['HourlyDryBulbTemperature'] = pd.to_numeric(Denver_2012_2014['HourlyDryBulbTemperature'],errors='coerce')
-Denver_2012_2014['HourlyDryBulbTemperature'].interpolate(inplace=True)
-Denver_2012_2014['HourlyDryBulbTemperature'].fillna(method='ffill',inplace=True)
-Denver_2012_2014['HourlyDryBulbTemperature'].fillna(method='bfill',inplace=True)
+    frames.append(temp_frame)
 
 
-#Separating the years and calculating averages for each hour of each day
-Denver_2012 = Denver_2012_2014[Denver_2012_2014['DATE'].dt.year == 2012]
-avg_daily_2012 = Denver_2012.groupby(Denver_2012['DATE'].dt.date)['HourlyDryBulbTemperature'].mean()
+#Missing year for Denver(2013)
+denver2012,denver2013,denver2014 = process_missing_DenverData2013()
+frames.append(denver2013)
 
-#Dropping the leap year so the lengths are the same
-avg_daily_2012 = avg_daily_2012.drop(pd.Timestamp('2012-02-29'))
+#Missing year for Alamosa(2014)
+alamosa2013,alamosa2014,alamosa2015 = process_missing_AlamosaData2014()
+frames.append(alamosa2014)
 
-Denver_2014 = Denver_2012_2014[Denver_2012_2014['DATE'].dt.year == 2014] 
-avg_daily_2014 = Denver_2014.groupby(Denver_2014['DATE'].dt.date)['HourlyDryBulbTemperature'].mean()
+combFrames = pd.concat(frames,ignore_index=True)
+combFrames.sort_values(by='DATE', inplace=True)
 
-#Resetting indexes to the same year 
-avg_daily_2012.index = avg_daily_2012.index.map(lambda d: d.replace(year = 2013))
-avg_daily_2014.index = avg_daily_2014.index.map(lambda d: d.replace(year = 2013))
+# Writting data to file
+# localPath = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/"
+# combined_frames.to_csv(localPath+"Combined_Data")
 
-#Creating Denver 2013 with average of 2012 and 2014
-avg_daily_2013 = (avg_daily_2012 + avg_daily_2014) / 2
+combFrames['Month'] = combFrames['DATE'].dt.to_period('M')
 
-#Creating 2013 and mapping the the daily average to hourly averages
-Denver_2013 = pd.DataFrame({'DATE':pd.date_range(start='2013-01-01', end='2013-12-31', freq='H')})
-Denver_2013['tempDate'] = Denver_2013['DATE'].dt.date
-Denver_2013['HourlyDryBulbTemperature'] = Denver_2013['tempDate'].map(avg_daily_2013)
-Denver_2013['HourlyDryBulbTemperature'] = pd.to_numeric(Denver_2013['HourlyDryBulbTemperature'], errors='coerce')
+monthlyAvg = combFrames.groupby(['Month','Location']).agg(AvgTemp = ('HourlyDryBulbTemperature','mean')).reset_index()
 
-Denver_2013['Location'] = 'Denver'
-Denver_2013.drop(columns=['tempDate'], inplace=True)
+#Group my month and location and get average
+monthlyAvg['Month'] = monthlyAvg['Month'].dt.to_timestamp()
 
-#Plotting it to make sure 2013 looking half decent
 
-# Set 'DATE' as the index for each DataFrame
-Denver_2012.set_index('DATE', inplace=True)
-Denver_2013.set_index('DATE', inplace=True)
-Denver_2014.set_index('DATE', inplace=True)
+#Pivot the dataframe. For locations as columns and months as rows
+pivot = monthlyAvg.pivot(index='Month',columns='Location',values='AvgTemp')
 
-# Resample and calculate the monthly mean temperature for each DataFrame
-monthly_avg_2012 = Denver_2012.resample('M')['HourlyDryBulbTemperature'].mean()
-monthly_avg_2013 = Denver_2013.resample('M')['HourlyDryBulbTemperature'].mean()
-monthly_avg_2014 = Denver_2014.resample('M')['HourlyDryBulbTemperature'].mean()
+plt.figure(figsize=(12,6))
 
-#Plotting the monthly averages
-plt.figure(figsize=(12, 6))
-plt.plot(monthly_avg_2012.index, monthly_avg_2012, label='2012')
-plt.plot(monthly_avg_2013.index, monthly_avg_2013, label='2013')
-plt.plot(monthly_avg_2014.index, monthly_avg_2014, label='2014')
+for location in pivot.columns:
+    plt.plot(pivot.index, pivot[location], marker='',label=location)
 
 plt.xlabel('Month')
 plt.ylabel('Average Temperature')
-plt.title('Monthly Average Temperatures in Denver (2012-2014)')
-plt.legend()
+plt.title('Average Monthly Temperature by Location (2013-2022)')
+plt.legend(title='Location')
 plt.grid(True)
 plt.show()
+
+
