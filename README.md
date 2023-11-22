@@ -1,53 +1,48 @@
-# Weather-Prediction-Model
+# Colorado Climate Forecast
 
-Weather Prediction Model for the State of Colorado
+## Overview
 
----
+The following project is aimed at using historical weather data from the National Center for Environmental Information to predict future temperature trends in the state of Colorado. By analyzing past patterns and changes in temperature, our goal is to provide insights into what the future climate of Colorado may look like, particularly in the context of global warming and environmental changes.
 
-### Eddie's notes in how I setup my dev environment
+## Notes on the data
 
-#### Unzip data
+Historical weather data came from the [National Center for Environmental Information](https://www.ncdc.noaa.gov/cdo-web/datatools/)
 
-> `unzip ./Weather\ Prediction\ Raw\ Data.zip -d ./raw_data`
+We used Local Climatological Data (LCD), which consist of measurements taken multiple times a day, amounting to over 100,000 entries per year.
 
-#### Virtual environment
+#### Missing Data: Denver-2013 and Alamosa-2014
 
-Run the following commands:
+DENVER INTERNATIONAL AIRPORT, CO US (Station ID: WBAN:03017)
+We encountered missing data for Denver in 2013 and Alamosa in 2014. For Denver, we used data fromDENVER INTERNATIONAL AIRPORT, CO US (Station ID: WBAN:03017). Despite efforts, the data for 2013 was not available. Similarly, data for ALAMOSA BERGMAN FIELD, CO US (Station ID: WBAN:23061) was missing for 2014.
 
-> `source .venv/bin/activate` [^1]
+#### Addressing Missing Data
 
-> `pip install pip --upgrade`
+We used data from adjacent years (2012 and 2014 for Denver, 2013 and 2015 for Alamosa) to predict the missing years. The graphs below show the estimated monthly average temperatures for these missing years.
 
-> `pip install -r ./requirements.txt`
+#### Data Visualization 
 
-#### Adding jupyter notebooks to vs code
+##### Missing Denver 2013 and Alamosa 2014
+![image](Screenshots/MissingData.png 'Missing Denver 2013 and Alamosa 2014')
 
-[Read article here](https://code.visualstudio.com/docs/datascience/jupyter-notebooks#:~:text=Jupyter%20Notebooks%20in%20VS%20Code,and%20through%20Python%20code%20files.)
+Here are the results of estimating what the year 2013 in Denver would look like by taking daily average from 2012 and 2014.
 
-> Note from Eddie: I didn't need to follow the above steps. Once you get the data unzipped, the virtual env. made, and all the packages installed, you should be able to open the `test.ipynb` and VSCode will have a message box pop-up asking to install extensions for Jupyter notebooks.
+##### Monthly Average Temperatures in Denver (2012-2014)
+![image](Screenshots/Denver-2013.png 'Monthly Average Temperatures in Denver (2012-2014)')
 
-[^1]: Note this may be different on Windows!
+Here are the results of estimating what the year 2014 in Alamosa would look like by taking daily average from 2013 and 2015.
 
-
-### Notes on the data
-
-#### Historal weather data came from the National Center for Enviromental Information: 
-We are missing data from Denver https://www.ncdc.noaa.gov/cdo-web/datatools/
-
-We used Local Climatological Data (LCD) which are station that collect data over time. The data is often taken couple of times every hour. Totally to over 100,000 entries per year.
-
-For Denver we used DIA(Denver International Airport) for some reason they were missing data for the 2013 calendar year. I spent many hours and tried many different approaches to request this data from the site, but for some reason it was not availble. 
-
-To address the missing data. We will gather data from 2012 and 2014 to make a prediction on what the data for 2013 would have looked like.
-
-Here are the results of estimating what the 2013 in Denver year would look like by taking daily average from 2012 and 2014 and creating 2013.
+##### Monthly Average Temperatures in Alamosa (2013-2015)
+![image](Screenshots/Alamosa-2014.png 'Monthly Average Temperatures in Alamosa (2013-2015)')
 
 
-#### Monthly Average Temperatures in Denver (2012-2014)
-![image](Screenshots/Figure_2.png 'Monthly Average Temperatures in Denver (2012-2014)')
+#### Graphs representing Monthly Temperatures of all 4 locations used in this project. Graphing large data sets is a good way to make sure it is consistent and there are no missing values.
 
-#### Average Monthly Temperature by Location 2003-2013
-![image](Screenshots/Figure_1.png 'Average Monthly Temperature by Location')
+##### Average Monthly Temperature by Location 2003-2012
+![image](Screenshots/AVGMonthly(2003-2012).png 'Average Monthly Temperature by Location 2003-2012')
+
+
+##### Average Monthly Temperature by Location 2013-2022
+![image](Screenshots/AVGMonthly(2013-2022).png 'Average Monthly Temperature by Location 2013-2022')
 
 
 
