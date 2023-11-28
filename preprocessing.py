@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from missingData import process_missing_DenverData2013,process_missing_AlamosaData2014
 
 def preprocessing():
@@ -11,8 +12,7 @@ def preprocessing():
     allFrames = []
 
     for file in fileNames:
-        #os.path.join(path,file)...
-        temp_frame = pd.read_csv(path+file,usecols=["DATE","HourlyDryBulbTemperature"])
+        temp_frame = pd.read_csv(os.path.join(path,file),usecols=["DATE","HourlyDryBulbTemperature"])
         temp_frame["DATE"] = pd.to_datetime(temp_frame["DATE"])
 
         temp_frame['HourlyDryBulbTemperature'] = pd.to_numeric(temp_frame['HourlyDryBulbTemperature'],errors='coerce')
@@ -43,7 +43,7 @@ def preprocessing():
     frames = []
 
     for file in morefiles:
-        temp_frame = pd.read_csv(path+file,usecols=['DATE','HourlyDryBulbTemperature'])
+        temp_frame = pd.read_csv(os.path.join(path,file),usecols=['DATE','HourlyDryBulbTemperature'])
 
         temp_frame['DATE'] = pd.to_datetime(temp_frame['DATE'])
         temp_frame['HourlyDryBulbTemperature'] = pd.to_numeric(temp_frame['HourlyDryBulbTemperature'],errors='coerce')
@@ -111,10 +111,6 @@ def preprocessing():
     #Renaming back to date
     daily_averages_pivot.rename(columns={'DATE_ONLY':'DATE'}, inplace=True)
 
-    #Reset index and sort
-    daily_averages_pivot.reset_index(drop=True,inplace=True)
-    daily_averages_pivot.sort_values(by='DATE',inplace=True)
-
     #print(daily_averages_pivot)
     '''
     Location        DATE    Alamosa     Denver      Grand    Springs
@@ -150,5 +146,5 @@ def graphing_data(data_frame):
     plt.grid(True)
     plt.show()
 
-if __name__ == "__main__":
-    preprocessing()
+# if __name__ == "__main__":
+#     preprocessing()
