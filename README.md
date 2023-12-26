@@ -45,4 +45,19 @@ Here are the results of estimating what the year 2014 in Alamosa would look like
 ![image](Screenshots/AVGMonthly(2013-2022).png 'Average Monthly Temperature by Location 2013-2022')
 
 
+### Fixing Issue "Calculating high and low temperatures from daily averages"
+Addressing the latest issue generated some expected problems in missingData.py, preprocessing.py and model.py files.
+
+By closing the issue and addressing the main concern of missing Min and Max values for the mode. A new problem was generated in the initial steps of preprocessing, specifucally regarding missing data from Denver 2013 and Alamosa 2014. I have fix this problem in the latest push. Below is a graph of missing years data with min and max values.
+
+Fixing the issue also rendered some, not all, of the graphing funcions useless. I have commmented them out for now.
+
+##### Monthly Average Temperatures in Denver 2013
+![image](Screenshots/Denver-2013-Min-Max.png.png 'Average Monthly Temperature in Denver 2013')
+
+
+##### Monthly Average Temperatures in Alamosa 2014
+![image](Screenshots/Alamosa-2014-Min-Max.png 'Average Monthly Temperature in Alamosa 2014')
+
+
 
