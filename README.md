@@ -53,11 +53,23 @@ By closing the issue and addressing the main concern of missing Min and Max valu
 Fixing the issue also rendered some, not all, of the graphing funcions useless. I have commmented them out for now.
 
 ##### Monthly Average Temperatures in Denver 2013
-![image](Screenshots/Denver-2013-Min-Max.png.png 'Average Monthly Temperature in Denver 2013')
+![image](Screenshots/Denver-2013-Min-Max.png. 'Average Monthly Temperature in Denver 2013')
 
 
 ##### Monthly Average Temperatures in Alamosa 2014
 ![image](Screenshots/Alamosa-2014-Min-Max.png 'Average Monthly Temperature in Alamosa 2014')
 
 
+### Final Check for all locations making sure there are no 'Holes' in the data.
 
+##### Denver Monthly Temperature 2003-2022
+![image](Screenshots/ALL_Denver.png 'Denver Monthly Temperature 2003-2022')
+
+##### Grand Junction Monthly Temperature 2003-2022
+![image](Screenshots/ALL_Grand.png 'Grand Monthly Temperature 2003-2022')
+
+##### Alamosa Monthly Temperature 2003-2022
+![image](Screenshots/ALL_Alamosa.png 'Alamosa Monthly Temperature 2003-2022')
+
+##### Colorado Springs Monthly Temperature 2003-2022
+![image](Screenshots/ALL_Springs.png 'Springs Monthly Temperature 2003-2022')

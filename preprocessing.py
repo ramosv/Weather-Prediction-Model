@@ -28,16 +28,6 @@ def preprocessing():
     combined_frames = pd.concat(allFrames, ignore_index=True)
     combined_frames.sort_values(by='DATE',inplace=True)
 
-    # Group my month and location and get average
-    combined_frames['Month'] = combined_frames['DATE'].dt.to_period('M')
-    monthlyAverage = combined_frames.groupby(['Month','Location']).agg(AvgTemp =('HourlyDryBulbTemperature', 'mean')).reset_index()
-    monthlyAverage['Month'] = monthlyAverage['Month'].dt.to_timestamp()
-
-    #Pivot the dataframe. For locations as columns and months as rows
-    pivot1 = monthlyAverage.pivot(index='Month',columns='Location',values='AvgTemp')
-
-    #graphing_data(pivot1)
-
     #########  Now dealing with 2013 to 2022 ############
     morefiles = ['Alamosa-2013-2022.csv','Denver-2014-2022.csv','Grand-2013-2022.csv','Springs-2013-2022.csv']
     frames = []
@@ -55,27 +45,9 @@ def preprocessing():
         temp_frame['Location'] = location
         frames.append(temp_frame)
 
-    # #Missing year for Denver(2013)
-    # denver2013 = process_missing_DenverData2013()
-    # frames.append(denver2013)
-
-    # #Missing year for Alamosa(2014)
-    # alamosa2014 = process_missing_AlamosaData2014()
-    # frames.append(alamosa2014)
-
     # Combine the data into a single data frame sorted by date
     combFrames = pd.concat(frames,ignore_index=True)
     combFrames.sort_values(by='DATE', inplace=True)
-
-    # Group my month and location and get average: For graphing function
-    combFrames['Month'] = combFrames['DATE'].dt.to_period('M')
-    monthlyAvg = combFrames.groupby(['Month','Location']).agg(AvgTemp = ('HourlyDryBulbTemperature','mean')).reset_index()
-    monthlyAvg['Month'] = monthlyAvg['Month'].dt.to_timestamp()
-
-    #Pivot the dataframe. For locations as columns and months as rows
-    pivot2 = monthlyAvg.pivot(index='Month',columns='Location',values='AvgTemp')
-
-    #graphing_data(pivot2)
 
     # Combine the two dataframes (20 years of data) and sort
     all_data = pd.concat([combined_frames,combFrames], ignore_index=True)
@@ -145,9 +117,19 @@ def preprocessing():
     
     #Updates the names
     daily_stats_pivot.columns = flattened_names
+    daily_stats_pivot['DATE'] = pd.to_datetime(daily_stats_pivot['DATE'])
 
+    #Missing year for Denver(2013)
+    denver2013 = process_missing_DenverData2013()
 
-    print(daily_stats_pivot)
+    #Missing year for Alamosa(2014)
+    alamosa2014 = process_missing_AlamosaData2014()
+
+    # Combine the data into a single data frame sorted by date
+    final_frame = pd.concat([daily_stats_pivot,denver2013,alamosa2014],ignore_index=True)
+    final_frame = final_frame.groupby('DATE', as_index=False).first()
+
+    print(final_frame)
     '''
                 DATE  Alamosa max  Denver max  Grand max  Springs max  Alamosa min  Denver min  Grand min  Springs min
     0     2003-01-01         39.0        43.0       29.0         37.0    11.333333        25.5       23.0    23.666667
@@ -163,27 +145,16 @@ def preprocessing():
     7304  2022-12-31         49.0        46.0       39.0         57.0     6.000000        28.0       28.0    28.000000
     '''
     # Writting data to file
-    # localPath = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/"
-    # daily_stats_pivot.to_csv(localPath+"Combined_Data")
+    #localPath = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/"
+    #final_frame.to_csv(localPath+"ALL_DATA")
 
-    missing_frames = []
-    #Missing year for Denver(2013)
-    denver2013 = process_missing_DenverData2013()
-    missing_frames.append(denver2013)
+    #graphing_data_yearly(daily_stats_pivot,'Denver',2013)
+    #graphing_data_all(final_frame)
+    graphing_data_location(final_frame,'Springs')
 
-    #Missing year for Alamosa(2014)
-    alamosa2014 = process_missing_AlamosaData2014()
-    missing_frames.append(alamosa2014)
+    return final_frame
 
-    # Combine the data into a single data frame sorted by date
-    daily_stats_pivot = pd.concat(missing_frames,ignore_index=True)
-    daily_stats_pivot.sort_values(by='DATE', inplace=True)
-
-    graphing_data(daily_stats_pivot,'Denver',2013)
-
-    return daily_stats_pivot
-
-def graphing_data(data_frame,location,year):
+def graphing_data_yearly(data_frame,location,year):
      
     data_frame['DATE'] = pd.to_datetime(data_frame['DATE'])
     data_frame = data_frame[data_frame['DATE'].dt.year == year]
@@ -201,6 +172,48 @@ def graphing_data(data_frame,location,year):
     plt.ylabel('Temperature (F)')
     plt.title(f'Average Montly Min and Max Temperatures for {location} in {year}')
     plt.legend()
+    plt.grid(True)
+    plt.show()
+
+def graphing_data_location(data_frame,location):
+    data_frame['DATE'] = pd.to_datetime(data_frame['DATE'])
+    data_frame['YearMonth'] = data_frame['DATE'].dt.to_period('M')
+
+    monthly_max = data_frame.groupby('YearMonth')[f'{location} max'].mean()
+    monthly_min = data_frame.groupby('YearMonth')[f'{location} min'].mean()
+    monthly_max.index = monthly_max.index.to_timestamp()
+    monthly_min.index = monthly_min.index.to_timestamp()
+
+    plt.figure(figsize=(15,8))
+
+    plt.plot(monthly_max.index, monthly_max, color='red', label=f'{location} max')
+    plt.plot(monthly_min.index, monthly_min, color='blue', label=f'{location} min')
+
+    plt.xlabel('Year-Month')
+    plt.ylabel('Temperature (F)')
+    plt.title(f'Average Monthly min and max temperatures for {location} 2003-2022')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+
+def graphing_data_all(data_frame):
+    data_frame['DATE'] = pd.to_datetime(data_frame['DATE'])
+    data_frame['Month'] = data_frame['DATE'].dt.to_period('M')
+
+    Monthly = data_frame.groupby('Month').mean()
+    Monthly.index = Monthly.index.to_timestamp()
+
+    plt.figure(figsize=(15,8))
+
+    for location in ['Alamosa','Denver','Grand','Springs']:
+        plt.plot(Monthly.index, Monthly[f'{location} max'], label=f'{location} Max')
+        plt.plot(Monthly.index, Monthly[f'{location} min'], label=f'{location} Min')
+
+    plt.xlabel('Month')
+    plt.ylabel('Temperature (F)')
+    plt.title('Average Montly Min and Max Temperatures by location')
+    plt.legend(title='Location and Temp')
     plt.grid(True)
     plt.show()
 

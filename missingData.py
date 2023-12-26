@@ -62,6 +62,7 @@ def process_missing_DenverData2013():
     364 2013-12-31         2.0        25.0
     '''
 
+    Denver_2013['DATE'] = pd.to_datetime(Denver_2013['DATE'])
     return Denver_2013
 
 
@@ -129,7 +130,7 @@ def process_missing_AlamosaData2014():
     Alamosa_2014.reset_index(inplace = True)
     Alamosa_2014.rename(columns={'index':'DATE','min':'Alamosa min','max':'Alamosa max'},inplace=True)
 
-    print(Alamosa_2014)
+    #print(Alamosa_2014)
     '''
                 DATE  Alamosa min  Alamosa max
     0   2014-01-01        -15.5    21.500000
@@ -145,6 +146,7 @@ def process_missing_AlamosaData2014():
     364 2014-12-31         -7.5    21.000000
     '''
 
+    Alamosa_2014['DATE'] = pd.to_datetime(Alamosa_2014['DATE'])
 
     return Alamosa_2014
 
