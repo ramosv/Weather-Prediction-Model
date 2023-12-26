@@ -36,7 +36,7 @@ def preprocessing():
     #Pivot the dataframe. For locations as columns and months as rows
     pivot1 = monthlyAverage.pivot(index='Month',columns='Location',values='AvgTemp')
 
-    graphing_data(pivot1)
+    #graphing_data(pivot1)
 
     #########  Now dealing with 2013 to 2022 ############
     morefiles = ['Alamosa-2013-2022.csv','Denver-2014-2022.csv','Grand-2013-2022.csv','Springs-2013-2022.csv']
@@ -55,13 +55,13 @@ def preprocessing():
         temp_frame['Location'] = location
         frames.append(temp_frame)
 
-    #Missing year for Denver(2013)
-    denver2012,denver2013,denver2014 = process_missing_DenverData2013()
-    frames.append(denver2013)
+    # #Missing year for Denver(2013)
+    # denver2013 = process_missing_DenverData2013()
+    # frames.append(denver2013)
 
-    #Missing year for Alamosa(2014)
-    alamosa2013,alamosa2014,alamosa2015 = process_missing_AlamosaData2014()
-    frames.append(alamosa2014)
+    # #Missing year for Alamosa(2014)
+    # alamosa2014 = process_missing_AlamosaData2014()
+    # frames.append(alamosa2014)
 
     # Combine the data into a single data frame sorted by date
     combFrames = pd.concat(frames,ignore_index=True)
@@ -75,12 +75,13 @@ def preprocessing():
     #Pivot the dataframe. For locations as columns and months as rows
     pivot2 = monthlyAvg.pivot(index='Month',columns='Location',values='AvgTemp')
 
-    graphing_data(pivot2)
+    #graphing_data(pivot2)
 
     # Combine the two dataframes (20 years of data) and sort
     all_data = pd.concat([combined_frames,combFrames], ignore_index=True)
     all_data.sort_values(by='DATE',inplace=True)
 
+    #print(all_data)
     '''
                             DATE  HourlyDryBulbTemperature Location    Month
     0      2003-01-01 00:00:00                      18.0  Alamosa  2003-01
@@ -96,55 +97,112 @@ def preprocessing():
     992824 2022-12-31 23:59:00                      28.0   Denver  2022-12
     '''
 
-    # We can now start preprocessing data for the machine learning model: RandomForestRegressor
+    # Dealing with issue "Calculating high and low temperatures from daily averages"
+    # the .agg() method allows the application of multiple operands and functions
     
     # Turning into daily averages: First lets take the date without the time and place into a new column
     all_data['DATE'] = pd.to_datetime(all_data['DATE'])
     all_data['DATE_ONLY'] = all_data['DATE'].dt.date
 
     #Grouping data by DATE_ONLY and Location
-    daily_averages = all_data.groupby(['DATE_ONLY','Location'])['HourlyDryBulbTemperature'].mean().reset_index()
+    daily_stats = all_data.groupby(['DATE_ONLY','Location'])['HourlyDryBulbTemperature'].agg(['max','min']).reset_index()
 
     # pivoting the data so that each locations temp is a separate column: Pivot functions returns a 'reshapes' dataframe
-    daily_averages_pivot = daily_averages.pivot(index='DATE_ONLY',columns='Location', values='HourlyDryBulbTemperature').reset_index()
+    daily_stats_pivot = daily_stats.pivot(index='DATE_ONLY',columns='Location').reset_index()
 
     #Renaming back to date
-    daily_averages_pivot.rename(columns={'DATE_ONLY':'DATE'}, inplace=True)
+    daily_stats_pivot.rename(columns={'DATE_ONLY':'DATE'}, inplace=True)
 
-    #print(daily_averages_pivot)
+    """
+                DATE_ONLY     max         ...    min
+    Location             Alamosa Denver  ... Denver Grand    Springs
+    0         2003-01-01    39.0   43.0  ...   25.5  23.0  23.666667
+    1         2003-01-02    38.0   54.0  ...   24.0  19.0  18.000000
+    2         2003-01-03    44.0   60.0  ...   35.0  18.0  31.666667
+    3         2003-01-04    50.0   54.0  ...   31.0  20.0  29.000000
+    4         2003-01-05    45.0   50.0  ...   35.0  23.0  29.000000
+    """
+
+    # Using agg with groupy here generated a multi-level header that looks like ('Alamosa, 'min') and (Alamosa, 'max')
+    # We will be flattening this by concatenating the strings to 'Alamosa min'and 'Alamosa max' 
+
+    flattened_names= []
+    for col in daily_stats_pivot.columns:
+        #Skip DATE
+        if col[0] == 'DATE':
+            flattened_names.append('DATE')
+        else:
+            #Combining the multilevel columns names
+            joined = ' '.join(col).strip()
+
+            #Making the location name come before the min or max
+            if joined.startswith('max') or joined.startswith('min'):
+                parts = joined.split(' ')
+                new = f"{parts[1]} {parts[0]}"
+                flattened_names.append(new)
+            else:
+                flattened_names.append(col)
+    
+    #Updates the names
+    daily_stats_pivot.columns = flattened_names
+
+
+    print(daily_stats_pivot)
     '''
-    Location        DATE    Alamosa     Denver      Grand    Springs
-    0         2003-01-01  24.985507  33.523256  26.692130  31.296296
-    1         2003-01-02  15.527778  37.068966  27.435374  31.213178
-    2         2003-01-03  22.891156  47.344828  28.850340  43.343537
-    3         2003-01-04  26.864583  39.812500  31.074830  38.122449
-    4         2003-01-05  30.284722  41.914286  32.323529  39.490000
-    ...              ...        ...        ...        ...        ...
-    7300      2022-12-27  31.413793  48.848485  31.000000  49.303571
-    7301      2022-12-28  36.068966  39.130435  32.466292  41.100000
-    7302      2022-12-29  21.800000  25.578947  24.492754  28.648649
-    7303      2022-12-30  20.327586  26.424242  28.638889  27.965517
-    7304      2022-12-31  30.800000  32.794118  31.682540  44.338710
+                DATE  Alamosa max  Denver max  Grand max  Springs max  Alamosa min  Denver min  Grand min  Springs min
+    0     2003-01-01         39.0        43.0       29.0         37.0    11.333333        25.5       23.0    23.666667
+    1     2003-01-02         38.0        54.0       39.0         49.0     2.000000        24.0       19.0    18.000000
+    2     2003-01-03         44.0        60.0       42.0         56.0     6.000000        35.0       18.0    31.666667
+    3     2003-01-04         50.0        54.0       44.0         46.0    10.000000        31.0       20.0    29.000000
+    4     2003-01-05         45.0        50.0       40.0         47.0    13.000000        35.0       23.0    29.000000
+    ...          ...          ...         ...        ...          ...          ...         ...        ...          ...
+    7300  2022-12-27         47.0        61.0       35.0         63.0     5.000000        37.0       23.0    33.000000
+    7301  2022-12-28         47.0        50.0       36.0         50.0    23.000000        29.0       30.5    33.000000
+    7302  2022-12-29         36.0        31.0       30.0         35.0     8.000000        17.0       16.0    15.500000
+    7303  2022-12-30         37.0        37.0       33.0         37.0     6.000000        18.0       22.0    15.000000
+    7304  2022-12-31         49.0        46.0       39.0         57.0     6.000000        28.0       28.0    28.000000
     '''
     # Writting data to file
     # localPath = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/"
-    # daily_averages_pivot.to_csv(localPath+"Combined_Data")
+    # daily_stats_pivot.to_csv(localPath+"Combined_Data")
 
-    return daily_averages_pivot
+    missing_frames = []
+    #Missing year for Denver(2013)
+    denver2013 = process_missing_DenverData2013()
+    missing_frames.append(denver2013)
 
-def graphing_data(data_frame):
+    #Missing year for Alamosa(2014)
+    alamosa2014 = process_missing_AlamosaData2014()
+    missing_frames.append(alamosa2014)
+
+    # Combine the data into a single data frame sorted by date
+    daily_stats_pivot = pd.concat(missing_frames,ignore_index=True)
+    daily_stats_pivot.sort_values(by='DATE', inplace=True)
+
+    graphing_data(daily_stats_pivot,'Denver',2013)
+
+    return daily_stats_pivot
+
+def graphing_data(data_frame,location,year):
      
-    plt.figure(figsize=(12,6))
+    data_frame['DATE'] = pd.to_datetime(data_frame['DATE'])
+    data_frame = data_frame[data_frame['DATE'].dt.year == year]
+    data_frame['Month'] = data_frame['DATE'].dt.to_period('M')
 
-    for location in data_frame.columns:
-        plt.plot(data_frame.index, data_frame[location], marker='',label=location)
+    monthly_data = data_frame.groupby('Month').mean()
+    monthly_data.index = monthly_data.index.to_timestamp()
 
+    plt.figure(figsize=(15,8))
+
+    plt.plot(monthly_data.index, monthly_data[f'{location} max'], color='red',label=f'{location} Max')
+    plt.plot(monthly_data.index, monthly_data[f'{location} min'], color='blue',label=f'{location} Min')
+    
     plt.xlabel('Month')
-    plt.ylabel('Average Temperature')
-    plt.title('Average Monthly Temperature by Location')
-    plt.legend(title='Location')
+    plt.ylabel('Temperature (F)')
+    plt.title(f'Average Montly Min and Max Temperatures for {location} in {year}')
+    plt.legend()
     plt.grid(True)
     plt.show()
 
-# if __name__ == "__main__":
-#     preprocessing()
+if __name__ == "__main__":
+    preprocessing()
