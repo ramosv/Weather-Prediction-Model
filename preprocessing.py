@@ -129,7 +129,7 @@ def preprocessing():
     final_frame = pd.concat([daily_stats_pivot,denver2013,alamosa2014],ignore_index=True)
     final_frame = final_frame.groupby('DATE', as_index=False).first()
 
-    print(final_frame)
+    #print(final_frame)
     '''
                 DATE  Alamosa max  Denver max  Grand max  Springs max  Alamosa min  Denver min  Grand min  Springs min
     0     2003-01-01         39.0        43.0       29.0         37.0    11.333333        25.5       23.0    23.666667
@@ -150,7 +150,7 @@ def preprocessing():
 
     #graphing_data_yearly(daily_stats_pivot,'Denver',2013)
     #graphing_data_all(final_frame)
-    graphing_data_location(final_frame,'Springs')
+    #graphing_data_location(final_frame,'Springs')
 
     return final_frame
 

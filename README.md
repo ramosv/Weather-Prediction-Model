@@ -53,7 +53,7 @@ By closing the issue and addressing the main concern of missing Min and Max valu
 Fixing the issue also rendered some, not all, of the graphing funcions useless. I have commmented them out for now.
 
 ##### Monthly Average Temperatures in Denver 2013
-![image](Screenshots/Denver-2013-Min-Max.png. 'Average Monthly Temperature in Denver 2013')
+![image](Screenshots/Denver-2013-Min-Max.png 'Average Monthly Temperature in Denver 2013')
 
 
 ##### Monthly Average Temperatures in Alamosa 2014

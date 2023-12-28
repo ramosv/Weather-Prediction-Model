@@ -1,64 +1,18 @@
 ,0
 DATE,0
-Alamosa,0
-Denver,0
-Grand,0
-Springs,0
+Grand max,0
 day_of_year,0
 month,0
-Alamosa_lag_1,0
-Grand_lag_1,0
-Springs_lag_1,0
-Denver_lag_1,0
-Alamosa_rolling_mean_1,0
-Grand_rolling_mean_1,0
-Springs_rolling_mean_1,0
-Denver_rolling_mean_1,0
-Alamosa_rolling_mean_3,0
-Grand_rolling_mean_3,0
-Springs_rolling_mean_3,0
-Denver_rolling_mean_3,0
-Alamosa_rolling_mean_5,0
-Grand_rolling_mean_5,0
-Springs_rolling_mean_5,0
-Denver_rolling_mean_5,0
-Alamosa_rolling_mean_7,0
-Grand_rolling_mean_7,0
-Springs_rolling_mean_7,0
-Denver_rolling_mean_7,0
-Alamosa_rolling_median_1,0
-Grand_rolling_median_1,0
-Springs_rolling_median_1,0
-Denver_rolling_median_1,0
-Alamosa_rolling_median_3,0
-Grand_rolling_median_3,0
-Springs_rolling_median_3,0
-Denver_rolling_median_3,0
-Alamosa_rolling_median_5,0
-Grand_rolling_median_5,0
-Springs_rolling_median_5,0
-Denver_rolling_median_5,0
-Alamosa_rolling_median_7,0
-Grand_rolling_median_7,0
-Springs_rolling_median_7,0
-Denver_rolling_median_7,0
-Alamosa_rolling_std_1,7305
-Grand_rolling_std_1,7305
-Springs_rolling_std_1,7305
-Denver_rolling_std_1,7305
-Alamosa_rolling_std_3,0
-Grand_rolling_std_3,0
-Springs_rolling_std_3,0
-Denver_rolling_std_3,0
-Alamosa_rolling_std_5,0
-Grand_rolling_std_5,0
-Springs_rolling_std_5,0
-Denver_rolling_std_5,0
-Alamosa_rolling_std_7,0
-Grand_rolling_std_7,0
-Springs_rolling_std_7,0
-Denver_rolling_std_7,0
-Alamosa_diff,0
-Grand_diff,0
-Springs_diff,0
-Denver_diff,0
+Grand max_lag_1,0
+Grand max_rolling_mean_1,0
+Grand max_rolling_mean_7,0
+Grand max_rolling_mean_14,0
+Grand max_rolling_mean_30,0
+Grand max_rolling_median_1,0
+Grand max_rolling_median_7,0
+Grand max_rolling_median_14,0
+Grand max_rolling_median_30,0
+Grand max_rolling_std_7,0
+Grand max_rolling_std_14,0
+Grand max_rolling_std_30,0
+Grand max_diff,0
