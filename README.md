@@ -77,22 +77,21 @@ Fixing the issue also rendered some, not all, of the graphing funcions useless. 
 
 In parameter optimization, them parameter is used for season period. Ideally I would like to select daily or m = 365 since our data is sampled that way. But it is very computational expensive.
 
-After swtiching the data from daily to monthly. The model did well at figuring out the seasonality in the data with a resonable fit time of around 10 seconds.
+After swtiching the data from daily to monthly. The model did well at figuring out the seasonality in the data with a resonable fit time of around 10 seconds. These are the results for "Grand min" and for "Grand max"
 
-These are the results for "Grand min"
+Grand min
+- Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
+- Total fit time: 8.894 seconds
+- Optimal SARIMA model order (p,d,q) (1, 0, 0)
+- Optimal seasonal order: (1, 0, 1, 12)
+- Test RMSE: 2.770376983204725
 
-Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
-Total fit time: 8.894 seconds
-Optimal SARIMA model order (p,d,q) (1, 0, 0)
-Optimal seasonal order: (1, 0, 1, 12)
-Test RMSE: 2.770376983204725
-
-And for "Grand max"
-Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
-Total fit time: 11.989 seconds
-Optimal SARIMA model order (p,d,q) (1, 0, 0)
-Optimal seasonal order: (1, 0, 1, 12)
-Test RMSE: 3.196960343446114
+Grand max
+- Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
+- Total fit time: 11.989 seconds
+- Optimal SARIMA model order (p,d,q) (1, 0, 0)
+- Optimal seasonal order: (1, 0, 1, 12)
+- Test RMSE: 3.196960343446114
 
 Meaning that the model was able to predict with a 2-3 degree differences from the train set.
 
@@ -120,5 +119,5 @@ In a perfect model all residuals would be zero, meaning prediction match the dat
     - Correlations within the blue area indicate no significant correlation.
     - spikes could reveal autocorrelation missed by the model
 
-##### Colorado Springs Monthly Temperature 2003-2022
+##### ARIMA plot_diagnostic
 ![image](Screenshots/SARIMA_Plot_diagnostic_monthly.png 'SARIMA plot_diagnostic')
