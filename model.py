@@ -1,7 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import os
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -27,8 +25,8 @@ def build_model(location):
     differential_feature = pd.DataFrame()
 
     # Shift() function in pandas creates these shifted or lag features from time series data.
-    # Adding a lag of 1 day
-    for lag in range(1,2):
+    #Adding a lag of 3 day
+    for lag in range(1,4):
         lag_featues[f"{location}_lag_{lag}"] = location_data[location].shift(lag)
 
     # Trying a few different rolling window sizes
@@ -48,37 +46,21 @@ def build_model(location):
     # Seasonality features
     location_data['day_of_year'] = location_data['DATE'].dt.dayofyear
     location_data['month'] = location_data['DATE'].dt.month
+    location_data['season'] = (location_data['DATE'].dt.month%12 + 3)//3
+    
 
     location_data = pd.concat([location_data,lag_featues,rolling_mean_feature,rolling_median_feature,rolling_std_feature,differential_feature],axis=1)
 
-    #print(location_data)
+    print(location_data)
 
     # Handling missing values from lag and rolling features
     location_data.interpolate(method='linear',inplace=True)  
     location_data.fillna(method='bfill',inplace=True)
     location_data.fillna(method='ffill',inplace=True)
 
-    #print(location_data)
-    # Dealing with persistent NaNs
-    # print("NaNs after processing:")
-    # nan_counts = location_data.isna().sum()
-    # print(type(nan_counts))
-    # print(f"nan_counts length: {len(nan_counts)}")
-
-    # #Store dropped nan
-    # localPath = "C:/Users/ramosv/Desktop/GitHub/Weather-Prediction-Model/"
-    # nan_counts.to_csv(os.path.join(localPath,"nanCounts.txt"))
-
-    # # Handling persistent NaNs
-    # if len(nan_counts) > 0:
-    #     # drop columns with NaNs
-    #     location_data.dropna(axis=1, how='all', inplace=True)
-    #     # drop rows with NaNs
-    #     location_data.dropna(axis=0, how='any', inplace=True)
-
-
     model= RandomForestRegressor(n_estimators=100, random_state=42)
 
+    #preparing feature matrix X and target vector y
     X = location_data.drop(['DATE', location], axis=1)
     y = location_data[location]
 
@@ -101,14 +83,8 @@ def build_model(location):
     importance_df = pd.DataFrame({'Feature': X_train.columns, 'Importance': feature_importances})
     print(importance_df.sort_values(by='Importance', ascending=False))
 
-
-    #Return trained model, features used in training and dataframe
+    # Return trained model, features used in training and dataframe
     return model,X.columns,location_data
-
-def forecast_temperature(model,data_frame,predict):
-    pass
-
-
 
 if __name__ == "__main__":
     model_min, features_min, dataframe_min = build_model('Grand min')

@@ -12,7 +12,6 @@ We used Local Climatological Data (LCD), which consist of measurements taken mul
 
 #### Missing Data: Denver-2013 and Alamosa-2014
 
-DENVER INTERNATIONAL AIRPORT, CO US (Station ID: WBAN:03017)
 We encountered missing data for Denver in 2013 and Alamosa in 2014. For Denver, we used data fromDENVER INTERNATIONAL AIRPORT, CO US (Station ID: WBAN:03017). Despite efforts, the data for 2013 was not available. Similarly, data for ALAMOSA BERGMAN FIELD, CO US (Station ID: WBAN:23061) was missing for 2014.
 
 #### Addressing Missing Data
@@ -73,3 +72,53 @@ Fixing the issue also rendered some, not all, of the graphing funcions useless. 
 
 ##### Colorado Springs Monthly Temperature 2003-2022
 ![image](Screenshots/ALL_Springs.png 'Springs Monthly Temperature 2003-2022')
+
+## Moving forward with a different model: Seasonal Autoregressive integrated moving average (SARIMA)
+
+In parameter optimization, them parameter is used for season period. Ideally I would like to select daily or m = 365 since our data is sampled that way. But it is very computational expensive.
+
+After swtiching the data from daily to monthly. The model did well at figuring out the seasonality in the data with a resonable fit time of around 10 seconds.
+
+These are the results for "Grand min"
+
+Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
+Total fit time: 8.894 seconds
+Optimal SARIMA model order (p,d,q) (1, 0, 0)
+Optimal seasonal order: (1, 0, 1, 12)
+Test RMSE: 2.770376983204725
+
+And for "Grand max"
+Best model: ARIMA(1,0,0)(1,0,1)[12] intercept
+Total fit time: 11.989 seconds
+Optimal SARIMA model order (p,d,q) (1, 0, 0)
+Optimal seasonal order: (1, 0, 1, 12)
+Test RMSE: 3.196960343446114
+
+Meaning that the model was able to predict with a 2-3 degree differences from the train set.
+
+The library documentation: https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.auto_arima.html
+
+A built in funcion from the library 'plot_diagnostics' provided four different plots from the after the model has been trained.
+
+For each data point, the residual is calculated as:
+Residual = Observed Value − Predicted Value
+
+In a perfect model all residuals would be zero, meaning prediction match the data perfectly. (Residual = error)
+
+1. Standarized Residual
+    - This shows the residuals of the model over time (standardized by subtracting the mean and dividing by the standard deviation of the residuals). 
+    - Ideally the residuals would be normally distrubted. This means little to no correlation. Any noticiable pattern means that the model has not picked up on any trends.
+2. Histogram plus estimated density
+    - The N(0,1) shows the distribution of the standardized residuals, compared with a standard normal distribution
+    - KDE should ideally follow the normal distribution.
+    - Diviations from the normal distribution indicate the residuals negatively affected the model
+3. normal Q-Q
+    - a Quantile-Quantile plot that compares the distribution of the standardized residuals to a normal distribution.
+    - The goal would be for the pointas to follow the red line representing a normal distribution for the residuals.
+4. Correlogram
+    - Correlation of the residuals with their own lagged values.
+    - Correlations within the blue area indicate no significant correlation.
+    - spikes could reveal autocorrelation missed by the model
+
+##### Colorado Springs Monthly Temperature 2003-2022
+![image](Screenshots/SARIMA_Plot_diagnostic_monthly.png 'SARIMA plot_diagnostic')
