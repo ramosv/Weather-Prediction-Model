@@ -4,6 +4,10 @@
 
 The following project is aimed at using historical weather data from the National Center for Environmental Information to predict future temperature trends in the state of Colorado. By analyzing past patterns and changes in temperature, our goal is to provide insights into what the future climate of Colorado may look like, particularly in the context of global warming and environmental changes.
 
+## Use of README file.
+
+I will be using this README as a way to log my progress and thought process throughout this project. This includes: posting insights, data challenges, model selection and interpreting results and findings with graphs.
+
 ## Notes on the data
 
 Historical weather data came from the [National Center for Environmental Information](https://www.ncdc.noaa.gov/cdo-web/datatools/)
