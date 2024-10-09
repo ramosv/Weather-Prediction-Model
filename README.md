@@ -2,7 +2,7 @@
 
 ## Overview
 
-The following project is aimed at using historical weather data from the National Center for Environmental Information to predict future temperature trends in the state of Colorado. By analyzing past patterns and changes in temperature, our goal is to provide insights into what the future climate of Colorado may look like, particularly in the context of global warming and environmental changes.
+Explored the use of machine learning models to predict future temperature trends in Colorado using historical weather data from the National Center for Environmental Information. Analyzed past patterns and changes in temperature to provide insights into future climate scenarios, with a focus on global warming and environmental changes.
 
 ## Use of README file.
 
@@ -22,7 +22,7 @@ We encountered missing data for Denver in 2013 and Alamosa in 2014. For Denver, 
 
 We used data from adjacent years (2012 and 2014 for Denver, 2013 and 2015 for Alamosa) to predict the missing years. The graphs below show the estimated monthly average temperatures for these missing years.
 
-#### Data Visualization 
+#### Data Visualization
 
 ##### Missing Denver 2013 and Alamosa 2014
 ![image](Screenshots/MissingData.png 'Missing Denver 2013 and Alamosa 2014')
@@ -109,7 +109,7 @@ Residual = Observed Value − Predicted Value
 In a perfect model all residuals would be zero, meaning prediction match the data perfectly. (Residual = error)
 
 1. Standarized Residual
-    - This shows the residuals of the model over time (standardized by subtracting the mean and dividing by the standard deviation of the residuals). 
+    - This shows the residuals of the model over time (standardized by subtracting the mean and dividing by the standard deviation of the residuals).
     - Ideally the residuals would be normally distrubted. This means little to no correlation. Any noticiable pattern means that the model has not picked up on any trends.
 2. Histogram plus estimated density
     - The N(0,1) shows the distribution of the standardized residuals, compared with a standard normal distribution
